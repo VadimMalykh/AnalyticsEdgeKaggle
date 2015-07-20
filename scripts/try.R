@@ -6,8 +6,8 @@ library(ROCR)
 library(tm)
 library(SnowballC)
 
-train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE, fileEncoding="windows-1252")
-test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE, fileEncoding="windows-1252")
+train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE)
+test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE)
 
 test$sold = NA
 train$is.train = 1 
@@ -76,9 +76,20 @@ ROCRpred = prediction(lpred4, val$sold)
 ROCRperf = performance(ROCRpred, "auc")
 ROCRperf # 0.8522093
 
-lmodel5 = glm(sold~startprice+biddable+productline+condition, data=train, family=binomial)
+lmodel5 = glm(sold~startprice+biddable+productline+condition+new, data=train, family=binomial)
 lpred5 = predict(lmodel5, newdata=val, type="response")
 ROCRpred = prediction(lpred5, val$sold)
 ROCRperf = performance(ROCRpred, "auc")
 ROCRperf # 0.8522093
 
+treemodel1 = randomForest(sold~., data = train)
+pred = predict(treemodel1, newdata=val)
+ROCRpred = prediction(pred, val$sold)
+ROCRperf = performance(ROCRpred, "auc")
+ROCRperf # 0.8421221
+
+treemodel2 = randomForest(sold~startprice+biddable+productline+condition+new+condit+use+scratch+good, data = train)
+pred = predict(treemodel2, newdata=val)
+ROCRpred = prediction(pred, val$sold)
+ROCRperf = performance(ROCRpred, "auc")
+ROCRperf # 0.8445785

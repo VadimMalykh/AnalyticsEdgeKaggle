@@ -42,11 +42,22 @@ data$color = as.factor(data$color)
 data$storage = as.factor(data$storage)
 data$productline = as.factor(data$productline)
 
-# k-means clustering by words
-for_clusters = data[,12:ncol(data)]
-km = kmeans(for_clusters, centers = 4)
-group1 = subset(data, km$cluster >= 1 & km$cluster <= 3)
-group2 = subset(data, km$cluster == 4)
+# trying
+Train = subset(data, is.train == 1)
+Test = subset(data, is.train == 0)
 
-wordcloud(colnames(group1[,12:55]), colSums(group1[,12:55]), scale=c(2,.25))
-wordcloud(colnames(group2[,12:55]), colSums(group2[,12:55]), scale=c(2,.25))
+Train$is.train = NULL
+Train$UniqueID = NULL
+
+TrainNew = subset(Train, condition == "New")
+set.seed(123)
+spl = sample.split(TrainNew$sold, SplitRatio=.8)
+train = subset(TrainNew, spl == TRUE)
+val = subset(TrainNew, spl == FALSE)
+val[val$productline=="iPad 2",]$productline = "Unknown"
+
+model = glm(sold~startprice+biddable+storage, data=train, family=binomial)
+pred = predict(model, newdata=val)
+ROCRpred = prediction(pred, val$sold)
+ROCRperf = performance(ROCRpred, "auc")
+ROCRperf
