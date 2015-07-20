@@ -1,14 +1,17 @@
 # Clustering then trees
-# test - 0.81474 (bad :()
+# test - 0.80289 (very very bad :()
 # train - 0.8638135
 
 library(tm)
 library(SnowballC)
 library(caTools)
 library(cluster)
+library(rpart)
+library(rpart.plot)
+library(ROCR)
 
-train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE, fileEncoding="latin1")
-test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE, fileEncoding="latin1")
+train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE, fileEncoding="windows-1252")
+test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE, fileEncoding="windows-1252")
 
 test$sold = NA
 train$is.train = 1 
@@ -17,7 +20,6 @@ data = rbind(train, test)
 rm(train, test)
 
 corpus = Corpus(VectorSource(data$description))
-rm(for_corpus)
 corpus = tm_map(corpus, tolower)
 corpus = tm_map(corpus, PlainTextDocument)
 corpus = tm_map(corpus, removePunctuation)
@@ -64,7 +66,6 @@ test1 = subset(data, hgroups == 1 & is.train == 0)
 test2 = subset(data, hgroups == 2 & is.train == 0)
 test3 = subset(data, hgroups == 3 & is.train == 0)
 
-library(rpart)
 
 train1$UniqueID = NULL
 train1$is.train = NULL

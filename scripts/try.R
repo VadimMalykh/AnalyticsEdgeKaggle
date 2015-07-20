@@ -5,10 +5,9 @@ library(caTools)
 library(ROCR)
 library(tm)
 library(SnowballC)
-library(cluster)
 
-train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE, fileEncoding="latin1")
-test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE, fileEncoding="latin1")
+train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE, fileEncoding="windows-1252")
+test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE, fileEncoding="windows-1252")
 
 test$sold = NA
 train$is.train = 1 
@@ -17,7 +16,6 @@ data = rbind(train, test)
 rm(train, test)
 
 corpus = Corpus(VectorSource(data$description))
-rm(for_corpus)
 corpus = tm_map(corpus, tolower)
 corpus = tm_map(corpus, PlainTextDocument)
 corpus = tm_map(corpus, removePunctuation)
@@ -71,3 +69,16 @@ lpred3 = predict(lmodel3, newdata=val, type="response")
 ROCRpred = prediction(lpred3, val$sold)
 ROCRperf = performance(ROCRpred, "auc")
 ROCRperf # 0.8516279
+
+lmodel4 = glm(sold~startprice+biddable+productline+condition+new, data=train, family=binomial)
+lpred4 = predict(lmodel4, newdata=val, type="response")
+ROCRpred = prediction(lpred4, val$sold)
+ROCRperf = performance(ROCRpred, "auc")
+ROCRperf # 0.8522093
+
+lmodel5 = glm(sold~startprice+biddable+productline+condition, data=train, family=binomial)
+lpred5 = predict(lmodel5, newdata=val, type="response")
+ROCRpred = prediction(lpred5, val$sold)
+ROCRperf = performance(ROCRpred, "auc")
+ROCRperf # 0.8522093
+
