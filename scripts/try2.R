@@ -2,6 +2,10 @@
 # test - ?
 # train - ?
 
+# I did features selection ;))
+# Select only features with most significance (glm, summary), importance (rf, your.rf.model$importance), non-zero variance (nearZeroVar), low features-correlation (corrplot).
+# Not too few (underfitting), not too many (overfitting), just optimal ;)
+
 Sys.setlocale("LC_ALL", "C")
 
 library(tm)
