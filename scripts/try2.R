@@ -21,7 +21,7 @@ test$sold = NA
 train$is.train = 1 
 test$is.train = 0
 data = rbind(train, test)
-rm(train, test)
+#rm(train, test)
 
 corpus = Corpus(VectorSource(data$description))
 corpus = tm_map(corpus, tolower)
@@ -32,13 +32,13 @@ corpus = tm_map(corpus, removeWords, c("ipad"))
 corpus = tm_map(corpus, stemDocument)
 
 frequencies = DocumentTermMatrix(corpus)
-sparse = removeSparseTerms(frequencies, 0.985)
-rm(corpus, frequencies)
+sparse = removeSparseTerms(frequencies, 0.99)
+#rm(corpus, frequencies)
 
 words = as.data.frame(as.matrix(sparse))
 colnames(words) = make.names(colnames(words))
 data = cbind(data, words)
-rm(words, sparse)
+#rm(words, sparse)
 
 data$description = NULL
 data$condition = as.factor(data$condition)
@@ -54,11 +54,6 @@ Test = subset(data, is.train == 0)
 
 Train$is.train = NULL
 Train$UniqueID = NULL
-
-train = data
-train$UniqueID = NULL
-train$is.train = NULL
-# just check some model on full data
 
 set.seed(123)
 spl = sample.split(Train$sold, SplitRatio=.75)
