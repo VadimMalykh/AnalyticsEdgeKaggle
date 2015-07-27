@@ -40,7 +40,7 @@ colnames(words) = make.names(colnames(words))
 data = cbind(data, words)
 #rm(words, sparse)
 
-data$description = NULL
+# data$description = NULL
 data$condition = as.factor(data$condition)
 data$cellular = as.factor(data$cellular)
 data$carrier = as.factor(data$carrier)
@@ -55,20 +55,25 @@ Test = subset(data, is.train == 0)
 Train$is.train = NULL
 Train$UniqueID = NULL
 
-set.seed(123)
-spl = sample.split(Train$sold, SplitRatio=.75)
-train = subset(Train, spl == TRUE)
-val = subset(Train, spl == FALSE)
+Train1 = subset(Train, nchar(description)==0)
+Train2 = subset(Train, nchar(description)!=0)
+Test1 = subset(Test, nchar(description)==0)
+Test2 = subset(Test, nchar(description)!=0)
 
-model = randomForest(sold~., data=train)
-pred = predict(model, newdata=val)
-ROCRpred = prediction(pred, val$sold)
-ROCRperf = performance(ROCRpred, "auc")
-ROCRperf
+Train1 = Train1[,2:10]
+lmodel = glm(sold~., data=Train1, family=binomial)
 
+Train2$description = NULL
 
-model = randomForest(sold~., data=Train)
-pred = predict(model, newdata=Test)
+rfmodel = randomForest(sold~., data=Train2)
+importantNames = rownames(subset(rfmodel$importance, rfmodel$importance>1))
+Train2 = Train2[, c(importantNames, "sold")]
+rfmodel = randomForest(sold~., data=Train2)
 
-submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
+lpred = predict(lmodel, newdata = Test1, type="response")
+rfpred = predict(rfmodel, newdata = Test2)
+
+sub1 = data.frame(UniqueID = Test1$UniqueID, Probability1 = lpred)
+sub2 = data.frame(UniqueID = Test2$UniqueID, Probability1 = rfpred)
+submission = rbind(sub1, sub2)
 write.csv(submission, "submission.csv", row.names = FALSE)
