@@ -1,5 +1,5 @@
 # Try
-# test - 0.84307
+# test - ?
 # train - ?
 
 Sys.setlocale("LC_ALL", "C")
@@ -49,6 +49,11 @@ Test = subset(data, is.train == 0)
 Train$is.train = NULL
 Train$UniqueID = NULL
 
+#remove columns with zero sums
+Train = Train[, c(rep(TRUE, 9), colSums(Train[10:ncol(Train)])!=0)]
+
+Train[, c(-3,-4,-5,-6,-7,-8,-9)] = scale(Train[, c(-3,-4,-5,-6,-7,-8,-9)])
+
 # train full RF to get impornance
 model = randomForest(sold~., data=Train)
 importants = subset(model$importance, model$importance>.5)
@@ -64,15 +69,17 @@ spl = sample.split(Train$sold, SplitRatio=.75)
 train = subset(Train, spl == TRUE)
 val = subset(Train, spl == FALSE)
 
-model = randomForest(sold~., data=train)
-pred = predict(model, newdata=val)
+#model = randomForest(sold~., data=train)
+#pred = predict(model, newdata=val)
+model = glm(sold~., data=train, family=binomial)
+pred = predict(model, newdata=val, type="response")
 ROCRpred = prediction(pred, val$sold)
 ROCRperf = performance(ROCRpred, "auc")
 ROCRperf
 
 
-model = randomForest(sold~., data=Train)
-pred = predict(model, newdata=Test)
+#model = randomForest(sold~., data=Train)
+#pred = predict(model, newdata=Test)
 
 submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
 write.csv(submission, "submission.csv", row.names = FALSE)
