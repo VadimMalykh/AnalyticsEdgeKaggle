@@ -71,6 +71,9 @@ cv = train(sold~., data=Train, method="rf", trControl = tc)
 
 #CV on glm
 cv = train(sold~., data=Train, method="glm", family=binomial, trControl = tc)
+#RMSE      Rsquared   RMSE SD     Rsquared SD
+#0.474636  0.2203433  0.05057359  0.05555082 
+
 pred = predict(cv$finalModel, newdata=Test, type="response")
 
 submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
