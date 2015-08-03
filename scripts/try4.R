@@ -9,6 +9,7 @@ library(SnowballC)
 library(caTools)
 library(ROCR)
 library(randomForest)
+library(caret)
 
 train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE)
 test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE)
@@ -52,6 +53,12 @@ Train = Train[, -nzv]
 
 cv = train(sold~., data=Train, method="rf")
 pred = predict(cv, newdata=Test)
+
+#mtry  RMSE       Rsquared   RMSE SD      Rsquared SD
+#2    0.4209302  0.3568421  0.004589823  0.02979545 
+#21    0.3916149  0.3911336  0.009158193  0.02482269 
+#40    0.3990768  0.3748473  0.009183898  0.02341234 
+
 
 submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
 write.csv(submission, "submission.csv", row.names = FALSE)

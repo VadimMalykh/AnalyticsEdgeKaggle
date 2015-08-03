@@ -47,11 +47,27 @@ Test = subset(data, is.train == 0)
 Train$is.train = NULL
 Train$UniqueID = NULL
 
-#PCA
+#remove zero columns from train
+zeroColumns = colSums(Train[,10:ncol(Train)]) == 0
+Train = Train[, c(rep(TRUE, 9), !zeroColumns)]
+Test = Test[, c(rep(TRUE, 11), !zeroColumns)]
 
+#PCA
+wordTrain = Train[,10:ncol(Train)]
+preProcVals = preProcess(wordTrain, method = "pca", thresh=.7)
+pcaTrain = predict(preProcVals, wordTrain)
+wordTest = Test[,12:ncol(Test)]
+pcaTest = predict(preProcVals, wordTest)
+Train = cbind(Train[,1:9], pcaTrain)
+Test = cbind(Test[, 1:11], pcaTest)
+
+tc = trainControl(method = "cv", number = 5)
 #CV on RF
 
+
 #CV on glm
+cv = train(sold~., data=Train, method="glm", family=binomial, trControl = tc)
+pred = predict(cv$finalModel, newdata=Test, type="response")
 
 submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
 write.csv(submission, "submission.csv", row.names = FALSE)
