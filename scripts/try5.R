@@ -63,7 +63,11 @@ Test = cbind(Test[, 1:11], pcaTest)
 
 tc = trainControl(method = "cv", number = 5)
 #CV on RF
-
+cv = train(sold~., data=Train, method="rf", trControl = tc)
+#mtry  RMSE       Rsquared   RMSE SD      Rsquared SD
+#2   0.4538179  0.2102904  0.002641092  0.02124389 
+#106   0.3854193  0.4039957  0.017161774  0.05281506 
+#210   0.3877369  0.3985129  0.019646020  0.05776977 
 
 #CV on glm
 cv = train(sold~., data=Train, method="glm", family=binomial, trControl = tc)
