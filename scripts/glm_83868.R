@@ -71,5 +71,8 @@ ROCRperf
 model = glm(sold~startprice+biddable+condition+storage+productline+X100+devic+hous+mint+sign, data=Train)
 pred = predict(model, newdata=Test, type="response")
 
+#RMSE       Rsquared   RMSE SD    Rsquared SD
+#0.3855389  0.4025029  0.0204619  0.06114075 
+
 submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
 write.csv(submission, "submission.csv", row.names = FALSE)

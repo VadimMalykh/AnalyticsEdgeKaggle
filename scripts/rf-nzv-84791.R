@@ -66,5 +66,13 @@ ROCRperf
 model = randomForest(sold~., data=Train)
 pred = predict(model, newdata=Test)
 
+#mtry  RMSE       Rsquared   RMSE SD      Rsquared SD
+#2    0.4185221  0.3788787  0.008980457  0.05303624 
+#21    0.3777437  0.4276086  0.017587490  0.05091490 
+#40    0.3835604  0.4127559  0.016481393  0.04697993 
+
+pred = predict(cv$finalModel, newdata=Test)
+
+
 submission = data.frame(UniqueID = Test$UniqueID, Probability1 = pred)
 write.csv(submission, "submission.csv", row.names = FALSE)

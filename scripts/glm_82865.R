@@ -1,5 +1,6 @@
 # glm with words (lmodel4 from try)
 # test - 82865
+Sys.setlocale("LC_ALL", "C")
 
 library(tm)
 library(SnowballC)
@@ -46,6 +47,9 @@ train$is.train = NULL
 
 lmodel4 = glm(sold~startprice+biddable+productline+condition+new, data=train, family=binomial)
 lpred4 = predict(lmodel4, newdata=test, type="response")
+
+#RMSE       Rsquared   RMSE SD      Rsquared SD
+#0.3866297  0.4005276  0.009988354  0.02973017 
 
 submission = data.frame(UniqueID = test$UniqueID, Probability1 = lpred4)
 write.csv(submission, "submission.csv", row.names = FALSE)
