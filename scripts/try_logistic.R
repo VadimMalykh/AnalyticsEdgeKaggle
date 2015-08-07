@@ -8,7 +8,7 @@ library(tm)
 library(SnowballC)
 library(caTools)
 library(ROCR)
-library(randomForest)
+library(caret)
 
 train = read.csv("eBayiPadTrain.csv", stringsAsFactors = FALSE)
 test = read.csv("eBayiPadTest.csv", stringsAsFactors = FALSE)
